@@ -2,4 +2,4 @@ model task2-1.mod;
 data task2-1_small.dat;
 option solver cplex; # Using full version ampl-cplex
 solve;
-print {b in BEAMS}: S[b] > task2-1small.out;
+print {b in BEAMS}: S[b] > task2-1_small.out;

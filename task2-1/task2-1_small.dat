@@ -11,4 +11,3 @@ param lambda := 0.5;       # weight on tumor
 read {m in MATS, i in ROWS, j in COLUMNS} matrix_value[m,i,j] < ../smallexample/beam_raw.txt;
 read {i in TROWS, j in TCOLS} tumor_value[i,j] < ../smallexample/tumor_raw.txt;
 read {i in CROWS, j in CCOLS} crit_value[i,j] < ../smallexample/critical_raw.txt;
-
