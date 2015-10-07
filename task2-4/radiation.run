@@ -1,0 +1,5 @@
+model radiation.mod;
+data radiation.dat;
+option solver cplex; # Using full version ampl-cplex
+solve;
+print {i in ROWS}: {j in COLUMNS} MaxValue[i,j] > radiation.out;
