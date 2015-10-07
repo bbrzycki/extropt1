@@ -8,8 +8,8 @@ param max_dose >=0 ;     # Max dose for critical area
 param lambda >=0, <=1 ;
 
 set BEAMS := 1 .. num_matrices; #beams;
-set BROWS:=1..num_rows;
-set BCOLS:=1..num_cols;
+set BROWS := 1 .. num_rows;
+set BCOLS := 1 .. num_cols;
 
 
 
@@ -22,11 +22,11 @@ set ROWS    := 1 .. num_rows;	  # set of rows
 set COLUMNS := 1 .. num_cols;	  # set of columns
 
 
-set TROWS:=1..num_rows;
-set TCOLS:=1..num_cols;
+set TROWS := 1 .. num_rows;
+set TCOLS := 1 .. num_cols;
 
-set CROWS:=1..num_rows;
-set CCOLS:=1..num_cols;
+set CROWS := 1 .. num_rows;
+set CCOLS := 1 .. num_cols;
 
 
 param matrix_value {MATS, ROWS, COLUMNS} >= 0; # values for entries of each matrix
