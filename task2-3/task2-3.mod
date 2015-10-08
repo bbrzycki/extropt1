@@ -1,50 +1,56 @@
-param num_matrices >= 1, integer; # Number of matrices in the data file to be read
-param num_rows >= 1, integer;     # Number of rows
-param num_cols >= 1, integer;     # Number of columns 
+param num_matrices 	>= 1, integer; 	# Number of matrices in the data file to be read
+param num_rows 		>= 1, integer;  # Number of rows
+param num_cols 		>= 1, integer;  # Number of columns 
 
-param min_dose >=0 ;    # Min dose for tumor
-param max_dose >=0 ;     # Max dose for critical area
+param min_dose >=0 ;	# Min dose for tumor
+param max_dose >=0 ;	# Max dose for critical area
 
-param lambda >=0, <=1 ;
+param lambda_t >=0, <=1;
+param lambda_c >=0, <=1;
+param lambda_b >=0, <=1;
+param lambda_o >=0, <=1;
+param width >= 0;
+set bound := -width .. width;
 
-set BEAMS := 1 .. num_matrices; #beams;
+set BEAMS := 1 .. num_matrices;
 set BROWS := 1 .. num_rows;
 set BCOLS := 1 .. num_cols;
 
+var S{b in BEAMS} >=0; 				# strength of beam n
+var min_offset >= 0, <= min_dose; 	# offset for min tumor dose
+var max_offset >= 0;			  	# offset for max critical dose
 
-var S{b in BEAMS} >=0; #strength of beam n
-param unit_beam{n in BEAMS, i in BCOLS, j in BROWS}; #strength of 1 unit of beams
+set MATS := 1 .. num_matrices; 	# set of matrices
+set ROWS := 1 .. num_rows;	  	# set of rows
+set COLS := 1 .. num_cols;	  	# set of columns
 
+param matrix_value {MATS, ROWS, COLS} >= 0; # values for entries of each matrix
+param tumor_value {ROWS,COLS} >=0;
+param crit_value {ROWS,COLS} >=0;
 
-set MATS    := 1 .. num_matrices; # set of matrices
-set ROWS    := 1 .. num_rows;	  # set of rows
-set COLUMNS := 1 .. num_cols;	  # set of columns
-
-
-set TROWS := 1 .. num_rows;
-set TCOLS := 1 .. num_cols;
-
-set CROWS := 1 .. num_rows;
-set CCOLS := 1 .. num_cols;
-
-
-param matrix_value {MATS, ROWS, COLUMNS} >= 0; # values for entries of each matrix
-param tumor_value {TROWS,TCOLS} >=0;
-param crit_value {CROWS,CCOLS} >=0;
-
-set TUMOR := {i in ROWS, j in COLUMNS: tumor_value[i,j]>0}; 
-set CRIT := {i in ROWS, j in COLUMNS: crit_value[i,j]>0}; 
+set TUMOR  := {i in ROWS, j in COLS: tumor_value[i,j]>0}; 
+set CRIT   := {i in ROWS, j in COLS: crit_value[i,j]>0}; 
+set BORDER_CALC := {i in ROWS, j in COLS: exists {k in bound, l in bound}
+				(i + k >= 1) and (i + k <= num_rows) and (j + l >= 1) and (j + l <= num_cols)
+				and (i + k, j + l) in CRIT};
+set BORDER := BORDER_CALC diff CRIT diff TUMOR;
+set OTHER := {i in ROWS, j in COLS} diff TUMOR diff CRIT diff BORDER;
 
 # Pushing all variables to the maximum value of their corresponding indices
-minimize beamusage: sum {i in ROWS, j in COLUMNS} sum{b in BEAMS}(S[b]*matrix_value[b,i,j]); #use this objective function to find minimum total dosage
+#minimize beamusage: sum {i in ROWS, j in COLS} sum{b in BEAMS}(S[b]*matrix_value[b,i,j]); #use this objective function to find minimum total dosage
 /* maximize beamweight: lambda * sum {(i,j) in TUMOR}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])) -
 	(1-lambda) * sum {(i,j) in CRIT}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])); #think this is right, but keep having infeasible solutions
 */
+minimize Beam_and_Offsets: lambda_t * (sum {(i,j) in TUMOR} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+							+ lambda_c * (sum {(i,j) in CRIT} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+							+ lambda_b * (sum {(i,j) in BORDER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+							+ lambda_o * (sum {(i,j) in OTHER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+							+ (1 - lambda_t - lambda_c - lambda_b - lambda_o) * (min_offset + max_offset);
 
 # Each variable at an index is >= to the maximum value at 
 # the index across all matrices given.
 subject to MinReq {(i,j) in TUMOR}: 
-	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) >= min_dose;
+	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) >= min_dose - min_offset;
 
 subject to MaxReq {(i,j) in CRIT}: 
-	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose;
+	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose - max_offset;
