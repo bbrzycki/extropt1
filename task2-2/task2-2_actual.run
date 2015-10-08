@@ -1,5 +1,5 @@
-model task2-1.mod;
-data task2-1_actual.dat;
+model task2-2.mod;
+data task2-2_actual.dat;
 option solver cplex; # Using full version ampl-cplex
 solve;
-print {b in BEAMS}: S[b] > task2-1_actual.out;
+print {b in BEAMS}: S[b] > task2-2_actual.out;
