@@ -12,7 +12,7 @@ set BROWS := 1 .. num_rows;
 set BCOLS := 1 .. num_cols;
 
 
-var S{b in BEAMS} >= 0; #strength of beam n
+var S {b in BEAMS} >= 0; #strength of beam n
 
 set MATS    := 1 .. num_matrices; # set of matrices
 set ROWS    := 1 .. num_rows;	  # set of rows

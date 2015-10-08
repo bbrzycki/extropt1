@@ -2,4 +2,4 @@ model task2-2.mod;
 data task2-2_actual.dat;
 option solver cplex; # Using full version ampl-cplex
 solve;
-print {b in BEAMS}: S[b] > task2-2_actual.out;
+print {i in ROWS}: {j in COLUMNS} sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) > task2-2_actual.out;

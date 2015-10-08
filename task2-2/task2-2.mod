@@ -12,7 +12,7 @@ set BROWS := 1 .. num_rows;
 set BCOLS := 1 .. num_cols;
 
 
-var S{b in BEAMS} >= 0; #strength of beam n
+var S {b in BEAMS} >= 0; #strength of beam n
 var min_offset >= 0, <= min_dose; # offset for min tumor dose
 var max_offset >= 0;			  # offset for max critical dose
 
@@ -36,10 +36,11 @@ set TUMOR := {i in ROWS, j in COLUMNS: tumor_value[i,j] > 0};
 set CRIT := {i in ROWS, j in COLUMNS: crit_value[i,j] > 0}; 
 
 # Pushing all variables to the maximum value of their corresponding indices
-minimize beamusage: sum {i in ROWS, j in COLUMNS} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]); #use this objective function to find minimum total dosage
+#minimize beamusage: sum {i in ROWS, j in COLUMNS} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]); #use this objective function to find minimum total dosage
 /* maximize beamweight: lambda * sum {(i,j) in TUMOR}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])) -
 	(1-lambda) * sum {(i,j) in CRIT}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])); #think this is right, but keep having infeasible solutions
 */
+minimize Offsets: min_offset + max_offset;
 
 # Each variable at an index is >= to the maximum value at 
 # the index across all matrices given.
