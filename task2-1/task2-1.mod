@@ -35,9 +35,7 @@ set CRIT := {i in ROWS, j in COLUMNS: crit_value[i,j] > 0};
 
 # Pushing all variables to the maximum value of their corresponding indices
 minimize beamusage: sum {i in ROWS, j in COLUMNS} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]); #use this objective function to find minimum total dosage
-/* maximize beamweight: lambda * sum {(i,j) in TUMOR}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])) -
-	(1-lambda) * sum {(i,j) in CRIT}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])); #think this is right, but keep having infeasible solutions
-*/
+
 
 # Each variable at an index is >= to the maximum value at 
 # the index across all matrices given.

@@ -31,9 +31,7 @@ var max_offset {(i,j) in CRIT} >= 0;			  	# offset for max critical dose
 
 # Pushing all variables to the maximum value of their corresponding indices
 #minimize beamusage: sum {i in ROWS, j in COLS} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]); #use this objective function to find minimum total dosage
-/*maximize beamweight: lambda * sum {(i,j) in TUMOR}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])) -
-	(1-lambda) * sum {(i,j) in CRIT}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])); #think this is right, but keep having infeasible solutions
-*/
+
 minimize Beam_and_Offsets: lambda * (sum {i in ROWS, j in COLS} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
 							+ (1 - lambda) * ((sum {(i,j) in TUMOR} min_offset[i,j]) + (sum {(i,j) in CRIT} max_offset[i,j]));
 
