@@ -3,7 +3,7 @@ param num_rows := 60;      # Number of rows
 param num_cols := 80;      # Number of columns 
 param min_dose := 10;      # Min dose for tumor
 param max_dose := 2;       # Max dose for critical area
-param lambda := 0.0;       # weight on tumor
+param lambda := 0.5;       # weight on tumor
 
 # Read from mat_raw.txt to fill matrix_value. Note that the order 
 # of the index variables matter; here one matrix is filled at a time, 

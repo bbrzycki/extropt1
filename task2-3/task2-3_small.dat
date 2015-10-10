@@ -3,9 +3,9 @@ param num_rows := 8;     	# Number of rows
 param num_cols := 8;     	# Number of columns 
 param min_dose := 10;    	# Min dose for tumor
 param max_dose := 2;     	# Max dose for critical area
-param lambda_t := 0.0;    	# weight on tumor
-param lambda_c := 0.5;    	# weight on tumor
-param lambda_b := 0.3;    	# weight on tumor
+param lambda_t := 0.2;    	# weight on tumor
+param lambda_c := 0.2;    	# weight on tumor
+param lambda_b := 0.2;    	# weight on tumor
 param lambda_o := 0.1;    	# weight on tumor
 param width := 1;			# border width
 
