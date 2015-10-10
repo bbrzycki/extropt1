@@ -17,8 +17,10 @@ set BROWS := 1 .. num_rows;
 set BCOLS := 1 .. num_cols;
 
 var S{b in BEAMS} >=0; 				# strength of beam n
-var min_offset >= 0, <= min_dose; 	# offset for min tumor dose
-var max_offset >= 0;			  	# offset for max critical dose
+var ma >= 0, <= min_dose; 	# offset for min tumor dose
+var mb >= 0;			  	# offset for max critical dose
+var maa >=0;
+var mab >= 0;
 
 set MATS := 1 .. num_matrices; 	# set of matrices
 set ROWS := 1 .. num_rows;	  	# set of rows
@@ -37,20 +39,28 @@ set BORDER := BORDER_CALC diff CRIT diff TUMOR;
 set OTHER := {i in ROWS, j in COLS} diff TUMOR diff CRIT diff BORDER;
 
 # Pushing all variables to the maximum value of their corresponding indices
-#minimize beamusage: sum {i in ROWS, j in COLS} sum{b in BEAMS}(S[b]*matrix_value[b,i,j]); #use this objective function to find minimum total dosage
-/* maximize beamweight: lambda * sum {(i,j) in TUMOR}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])) -
-	(1-lambda) * sum {(i,j) in CRIT}(sum{b in BEAMS}(S[b]*matrix_value[b,i,j])); #think this is right, but keep having infeasible solutions
-*/
+/*
 minimize Beam_and_Offsets: lambda_t * (sum {(i,j) in TUMOR} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
 							+ lambda_c * (sum {(i,j) in CRIT} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
 							+ lambda_b * (sum {(i,j) in BORDER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
-							+ lambda_o * (sum {(i,j) in OTHER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+							+ lambda_o * (sum {(i,j) in OTHER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]));
+*/
+/*
+maximize radiation:
+							+ lambda_b * (sum {(i,j) in BORDER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
+		
 							+ (1 - lambda_t - lambda_c - lambda_b - lambda_o) * (min_offset + max_offset);
+*/
+
+maximize fun: sum{(i,j) in TUMOR} (sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) -10); 
 
 # Each variable at an index is >= to the maximum value at 
 # the index across all matrices given.
+
+/*
 subject to MinReq {(i,j) in TUMOR}: 
-	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) >= min_dose - min_offset;
+	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) = min_dose - ma + mb;
+*/
 
 subject to MaxReq {(i,j) in CRIT}: 
-	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose - max_offset;
+	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose - mab;
