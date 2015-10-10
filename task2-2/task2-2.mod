@@ -2,8 +2,9 @@ param num_matrices 	>= 1, integer;	# Number of matrices in the data file to be r
 param num_rows 		>= 1, integer;  # Number of rows
 param num_cols 		>= 1, integer;  # Number of columns 
 
-param min_dose >=0;    # Min dose for tumor
-param max_dose >=0;    # Max dose for critical area
+param min_dose >=0;    				   # Min dose for tumor
+param max_dose >=0;    				   # Max dose for critical area
+param min_var_bound >=0, <= min_dose;  # max variation for min_offset
 
 param lambda >= 0, <= 1;
 
@@ -25,7 +26,7 @@ param crit_value {ROWS,COLS} >= 0;
 set TUMOR := {i in ROWS, j in COLS: tumor_value[i,j] > 0}; 
 set CRIT := {i in ROWS, j in COLS: crit_value[i,j] > 0}; 
 
-var min_offset {(i,j) in TUMOR} >= 0, <= min_dose; 	# offset for min tumor dose
+var min_offset {(i,j) in TUMOR} >= 0, <= min_var_bound; 	# offset for min tumor dose
 var max_offset {(i,j) in CRIT} >= 0;			  	# offset for max critical dose
 
 # Pushing all variables to the maximum value of their corresponding indices
