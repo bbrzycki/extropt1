@@ -34,11 +34,12 @@ set BORDER_CALC := {i in ROWS, j in COLS: exists {k in bound, l in bound}
 set BORDER := BORDER_CALC diff CRIT diff TUMOR;
 set OTHER := {i in ROWS, j in COLS} diff TUMOR diff CRIT diff BORDER;
 
-var min_offset {(i,j) in TUMOR} >= 0, <= min_dose-0.34; 	# offset for min tumor dose
+#var min_offset {(i,j) in TUMOR} >= 0, <= min_dose-0.34; 	# offset for min tumor dose
 var max_offset {(i,j) in CRIT} >= 0;			  	# offset for max critical dose
-
+var min_offset {(i,j) in TUMOR} >=0, <=3;
 # Pushing all variables to the maximum value of their corresponding indices
 
+/*
 minimize Beam_and_Offsets: lambda_t * (sum {(i,j) in TUMOR} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
 							+ lambda_c * (sum {(i,j) in CRIT} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
 							+ lambda_b * (sum {(i,j) in BORDER} sum{b in BEAMS}(S[b] * matrix_value[b,i,j]))
@@ -46,7 +47,11 @@ minimize Beam_and_Offsets: lambda_t * (sum {(i,j) in TUMOR} sum{b in BEAMS}(S[b]
 							+ (1 - lambda_t - lambda_c - lambda_b - lambda_o) * 
 							((sum {(i,j) in TUMOR} min_offset[i,j]) + (sum {(i,j) in CRIT} max_offset[i,j]));
 
+*/
 
+
+#minimize Beam_and_Offsets: (sum{(i,j) in CRIT} max_offset[i,j]) + (sum{(i,j) in BORDER} sum{b in BEAMS} (S[b] * matrix_value[b,i,j]));
+#minimize Beam_and_Offsets: (sum{(i,j) in CRIT} max_offset[i,j]);
 # Each variable at an index is >= to the maximum value at 
 # the index across all matrices given.
 
@@ -55,4 +60,4 @@ subject to MinReq {(i,j) in TUMOR}:
 	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) >= min_dose - min_offset[i,j];
 
 subject to MaxReq {(i,j) in CRIT}: 
-	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose + max_offset[i,j];
+	sum{b in BEAMS} (S[b] * matrix_value[b,i,j]) <= max_dose+max_offset[i,j];
