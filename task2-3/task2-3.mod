@@ -4,6 +4,7 @@ param num_cols 		>= 1, integer;  # Number of columns
 
 param min_dose >=0 ;	# Min dose for tumor
 param max_dose >=0 ;	# Max dose for critical area
+param min_var_bound >=0, <= min_dose;  # max variation for min_offset
 
 param lambda_t >=0, <=1;
 param lambda_c >=0, <=1;
@@ -34,7 +35,7 @@ set BORDER_CALC := {i in ROWS, j in COLS: exists {k in bound, l in bound}
 set BORDER := BORDER_CALC diff CRIT diff TUMOR;
 set OTHER := {i in ROWS, j in COLS} diff TUMOR diff CRIT diff BORDER;
 
-#var min_offset {(i,j) in TUMOR} >= 0, <= min_dose-0.34; 	# offset for min tumor dose
+var min_offset {(i,j) in TUMOR} >= 0, <= min_var_bound; 	# offset for min tumor dose
 var max_offset {(i,j) in CRIT} >= 0;			  	# offset for max critical dose
 var min_offset {(i,j) in TUMOR} >=0, <=3;
 # Pushing all variables to the maximum value of their corresponding indices
