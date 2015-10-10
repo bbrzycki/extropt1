@@ -1,0 +1,10 @@
+model model_enhancement.mod;
+data data_enhancement.dat;
+option solver cplex;
+solve;
+display S;
+display max_offset;
+display min_offset;
+print {i in ROWS}: {j in COLUMNS} sum{b in BEAMS} (S[b] * matrix_value[(b*num_lvl+1),i,j]) > enhancement1.out;
+print {i in ROWS}: {j in COLUMNS} sum{b in BEAMS} (S[b] * matrix_value[(b*num_lvl+2),i,j]) > enhancement2.out;
+print {i in ROWS}: {j in COLUMNS} sum{b in BEAMS} (S[b] * matrix_value[(b*num_lvl+3),i,j]) > enhancement3.out;
