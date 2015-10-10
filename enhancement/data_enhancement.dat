@@ -1,0 +1,12 @@
+param num_matrices := 36; # Number of matrices in the data file to be read
+param num_rows := 6;     # Number of rows
+param num_cols := 6;     # Number of columns
+param num_lvl := 3; 	 # Number of levels in 3rd dimension 
+param num_beams := 12;
+param min_dose := 10;    # Min dose for tumor
+param max_dose := 2;     # Max dose for critical area
+param lambda := 0.5;       # weight on tumor
+
+read {m in MATS, i in ROWS, j in COLUMNS} matrix_value[m,i,j] < ../enhancement/beam_enhancement.txt;
+read {l in LVL, i in TROWS, j in TCOLS} tumor_value[l,i,j] < ../enhancement/tumor_enhancement.txt;
+read {l in LVL, i in CROWS, j in CCOLS} crit_value[l,i,j] < ../enhancement/crit_enhancement.txt;
